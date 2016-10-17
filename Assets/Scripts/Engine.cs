@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Класс инкапсулирует в себе логику связанную
+/// с изменением скорости корабля.
+/// </summary>
 public class Engine : MonoBehaviour
 {
     [SerializeField]
@@ -10,6 +14,8 @@ public class Engine : MonoBehaviour
     private float Acceleration;
 
     private AccelerationDirection mCurrentAccelerationDirection;
+
+    private Rigidbody2D mRigidbody;
 
     public float CurrentSpeed
     {
@@ -33,6 +39,15 @@ public class Engine : MonoBehaviour
         mCurrentAccelerationDirection = AccelerationDirection.Forward;
     }
 
+    void Awake()
+    {
+        this.mRigidbody = GetComponent<Rigidbody2D>();
+        if (mRigidbody == null)
+        {
+            Debug.LogError("Can not find rigidbody component");
+        }
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -44,10 +59,10 @@ public class Engine : MonoBehaviour
     void Update()
     {
         UpdateCurrentSpeed();
-        ResetAcceleration();
+        ResetAccelerationDirection();
     }
 
-    private void ResetAcceleration()
+    private void ResetAccelerationDirection()
     {
         mCurrentAccelerationDirection = AccelerationDirection.Hold;
     }
@@ -65,6 +80,8 @@ public class Engine : MonoBehaviour
         {
             CurrentSpeed = MinimumSpeed;
         }
+
+        mRigidbody.velocity = transform.up * CurrentSpeed;
     }
 
     internal enum AccelerationDirection
