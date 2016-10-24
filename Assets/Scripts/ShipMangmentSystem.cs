@@ -2,15 +2,25 @@
 
 public class ShipMangmentSystem : MonoBehaviour
 {
+    [SerializeField]
+    private Engine MineEngine;
+    [SerializeField]
+    private Helm MineHelm;
+    [SerializeField]
+    private MineralExtractor MineMineralExtractor;
 
-    public Engine MineEngine;
-    public Helm MineHelm;
+    [SerializeField]
+    private Transform Base;
 
-    public Transform TargetTransform;
+    [SerializeField]
+    private Transform TargetTransform;
+
 
     private Vector3 mDirection;
     private Vector3 mRightDirection;
     private Vector3 mLeftDirection;
+
+    private State mCurrentState;
 
     void Awake()
     {
@@ -22,18 +32,36 @@ public class ShipMangmentSystem : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-	
+        mCurrentState = State.Searching;
+
     }
 	
     // Update is called once per frame
     void Update()
     {
-        Vector3 TargetPosition = TargetTransform.position;
-        if (isNear(TargetPosition))
+        if (MineMineralExtractor.isFilled)
         {
-            GenerateNewTargetPosition();
+            mCurrentState = State.FlyToBase;
         }
-        FlyTo(TargetTransform.position);
+        else
+        {
+            if (mCurrentState == State.FlyToBase)
+            {
+                GenerateNewTargetPosition();
+            }
+            mCurrentState = State.Searching;
+        }
+
+        switch (mCurrentState)
+        {
+            case State.Searching:
+                Searching();
+                break;
+
+            case State.FlyToBase:
+                FlyTo(Base.position);
+                break;
+        }
     }
 
     private void FlyTo(Vector3 TargetPosition)
@@ -51,8 +79,7 @@ public class ShipMangmentSystem : MonoBehaviour
 
         float RotateDirectionToTarget = Vector3.Dot(mRightDirection, 
                                             DirectionToTArget);
-
-        Debug.Log(RotateDirectionToTarget);
+                                           
 
         if (MoveDirectionToTarget > 0)
         {
@@ -72,6 +99,8 @@ public class ShipMangmentSystem : MonoBehaviour
             MineHelm.TurnLeft();
         }
     }
+
+
 
     /// <summary>
     /// Генерация новой позиции для цели.
@@ -113,8 +142,19 @@ public class ShipMangmentSystem : MonoBehaviour
         }
     }
 
+    private void Searching()
+    {
+        Vector3 TargetPosition = TargetTransform.position;
+        if (isNear(TargetPosition))
+        {
+            GenerateNewTargetPosition();
+        }
+        FlyTo(TargetPosition);
+    }
+
     internal enum State
     {
-        Searching
+        Searching,
+        FlyToBase
     }
 }
