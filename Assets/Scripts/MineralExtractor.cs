@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditorInternal;
 
 /// <summary>
 /// Позволяет добывать минералы.
@@ -8,8 +9,12 @@ public class MineralExtractor : MonoBehaviour
 
     [SerializeField]
     private int ResourceCapacity = 1;
+    [SerializeField]
+    private GameObject Bagage;
 
     private int mCurrentCapacity = 0;
+    private State mCurrentState = State.NotLoaded;
+
 
     /// <summary>
     /// Возвращает истину если, минеральный 
@@ -25,15 +30,29 @@ public class MineralExtractor : MonoBehaviour
 
     }
 
+    void Update()
+    {
+        if (mCurrentState == State.Loaded)
+        {
+            Bagage.SetActive(true);
+        }
+        if (mCurrentState == State.NotLoaded)
+        {
+            Bagage.SetActive(false);
+        }
+    }
+
 
     private void Extract(Mineral mineral)
     {
         mCurrentCapacity += mineral.getResource();
+        mCurrentState = State.Loaded;
     }
 
     private void Unload()
     {
         mCurrentCapacity = 0;
+        mCurrentState = State.NotLoaded;
     }
 
     // Use this for initialization
@@ -83,4 +102,12 @@ public class MineralExtractor : MonoBehaviour
         }
         return false;
     }
+
+    internal enum State
+    {
+        Loaded,
+        NotLoaded
+    }
+
+
 }

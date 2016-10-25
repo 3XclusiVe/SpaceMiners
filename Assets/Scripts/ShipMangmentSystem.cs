@@ -8,6 +8,9 @@ public class ShipMangmentSystem : MonoBehaviour
     private Helm MineHelm;
     [SerializeField]
     private MineralExtractor MineMineralExtractor;
+    [SerializeField]
+    private BeaconController MineBeaconController;
+
 
     [SerializeField]
     private Transform Base;
@@ -60,6 +63,7 @@ public class ShipMangmentSystem : MonoBehaviour
 
             case State.FlyToBase:
                 FlyTo(Base.position);
+                MineBeaconController.putBeacon();
                 break;
         }
     }
