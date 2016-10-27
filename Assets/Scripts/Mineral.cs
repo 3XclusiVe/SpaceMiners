@@ -33,9 +33,4 @@ public class Mineral : MonoBehaviour
         return ExtractedResource;
     }
 	
-    // Update is called once per frame
-    void Update()
-    {
-	
-    }
 }

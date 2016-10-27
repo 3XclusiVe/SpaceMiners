@@ -11,6 +11,7 @@ public class ShipMangmentSystem : MonoBehaviour
     [SerializeField]
     private BeaconController MineBeaconController;
 
+    private Vector3 mLastPosition;
 
     [SerializeField]
     private Transform Base;
@@ -24,6 +25,10 @@ public class ShipMangmentSystem : MonoBehaviour
     private Vector3 mLeftDirection;
 
     private State mCurrentState;
+
+    private Vector3 mTargetPosition;
+
+    private bool isTriggerBeaconInFrame = false;
 
     void Awake()
     {
@@ -42,18 +47,21 @@ public class ShipMangmentSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isTriggerBeaconInFrame = false;
+        Vector3 CurrentPosition = transform.position;
+
         if (MineMineralExtractor.isFilled)
         {
             mCurrentState = State.FlyToBase;
         }
-        else
-        {
-            if (mCurrentState == State.FlyToBase)
-            {
-                GenerateNewTargetPosition();
-            }
-            mCurrentState = State.Searching;
-        }
+//        else
+//        {
+//            if (mCurrentState == State.FlyToBase)
+//            {
+//                GenerateNewTargetPosition();
+//                mCurrentState = State.Searching;
+//            }
+//        }
 
         switch (mCurrentState)
         {
@@ -63,9 +71,56 @@ public class ShipMangmentSystem : MonoBehaviour
 
             case State.FlyToBase:
                 FlyTo(Base.position);
-                MineBeaconController.putBeacon();
+                MineBeaconController.putBeacon(mLastPosition);
+                if (!MineMineralExtractor.isFilled)
+                {
+                    mCurrentState = State.Searching;
+                }
+                break;
+            case State.FlyToTarget:
+                FlyTo(mTargetPosition);
                 break;
         }
+
+        mLastPosition = CurrentPosition;
+
+    }
+
+    float timer = 0;
+
+    void LateUpdate()
+    {
+        if (isTriggerBeaconInFrame == false)
+        {
+            if (mCurrentState == State.FlyToTarget)
+            {
+                timer += Time.deltaTime;
+
+                if (timer > 2f)
+                {
+                    mCurrentState = State.Searching;
+                    timer = 0;
+                }
+            }
+        }
+    }
+
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (isBeacon(other))
+        {
+            isTriggerBeaconInFrame = true;
+            Beacon beacon = other.gameObject.GetComponent<Beacon>();
+            mTargetPosition = beacon.getTargetPosition();
+            mCurrentState = State.FlyToTarget;
+
+            if (!MineMineralExtractor.isFilled)
+            {
+                Destroy(beacon.gameObject, 0.1f);
+            }
+        }
+        
     }
 
     private void FlyTo(Vector3 TargetPosition)
@@ -159,6 +214,16 @@ public class ShipMangmentSystem : MonoBehaviour
     internal enum State
     {
         Searching,
-        FlyToBase
+        FlyToBase,
+        FlyToTarget
+    }
+
+    bool isBeacon(Collider2D other)
+    {
+        if (other.tag == "Beacon")
+        {
+            return true;
+        }
+        return false;
     }
 }

@@ -15,7 +15,6 @@ public class MineralExtractor : MonoBehaviour
     private int mCurrentCapacity = 0;
     private State mCurrentState = State.NotLoaded;
 
-
     /// <summary>
     /// Возвращает истину если, минеральный 
     /// экстрактор запонен минералами.
@@ -69,11 +68,7 @@ public class MineralExtractor : MonoBehaviour
             if (!isFilled)
             {
                 Mineral mineral = other.gameObject.GetComponent<Mineral>();
-                if (mineral != null)
-                {
-                    this.Extract(mineral);
-                }
-
+                this.Extract(mineral);
             }
         }
 

@@ -7,20 +7,11 @@ public class BeaconController : MonoBehaviour
     [SerializeField]
     private GameObject Beacon;
 
-    public void putBeacon()
+    public void putBeacon(Vector3 TargetPosition)
     {
-        Instantiate(Beacon, this.transform.position, Quaternion.identity);
+        GameObject BeaconBO = Instantiate(Beacon, this.transform.position, Quaternion.identity) as GameObject;
+        Beacon beacon = BeaconBO.GetComponent<Beacon>();
+        beacon.Initialize(TargetPosition);
     }
 
-    // Use this for initialization
-    void Start()
-    {
-	
-    }
-	
-    // Update is called once per frame
-    void Update()
-    {
-	
-    }
 }
