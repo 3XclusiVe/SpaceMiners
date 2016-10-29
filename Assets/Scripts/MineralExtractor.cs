@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditorInternal;
 
 /// <summary>
 /// Позволяет добывать минералы.
