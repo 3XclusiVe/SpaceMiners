@@ -30,6 +30,12 @@ public class ShipMangmentSystem : MonoBehaviour
 
     private bool isTriggerBeaconInFrame = false;
 
+    public void Initialize(Transform Base, Transform TargetTransform)
+    {
+        this.Base = Base;
+        this.TargetTransform = TargetTransform;
+    }
+
     void Awake()
     {
         mDirection = transform.up;
@@ -54,14 +60,13 @@ public class ShipMangmentSystem : MonoBehaviour
         {
             mCurrentState = State.FlyToBase;
         }
-//        else
-//        {
-//            if (mCurrentState == State.FlyToBase)
-//            {
-//                GenerateNewTargetPosition();
-//                mCurrentState = State.Searching;
-//            }
-//        }
+        else
+        {
+            if (mCurrentState == State.FlyToBase)
+            {
+                GenerateNewTargetPosition();
+            }
+        }
 
         switch (mCurrentState)
         {
@@ -188,10 +193,11 @@ public class ShipMangmentSystem : MonoBehaviour
     private bool isNear(Vector3 TargetPosition)
     {
         Vector3 VectorToTarget = TargetPosition - transform.position;
+        float MinDistance = 0.5f;
 
         float DistanceToTarget = Vector3.Magnitude(VectorToTarget);
 
-        if (DistanceToTarget > 2)
+        if (DistanceToTarget > MinDistance)
         {
             return false;
         }
